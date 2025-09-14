@@ -7,10 +7,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties(GreetingConfiguration.class)
-public class Startup {
+public class GreetingStartup {
 
     public static void main(String[] args) {
-        SpringApplication.run(Startup.class, args);
+        SpringApplication.run(GreetingStartup.class, args);
     }
 
 }
