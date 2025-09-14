@@ -17,11 +17,15 @@ public class FooBarController {
 
     @GetMapping("/foo-bar")
 //    @Retry(name = "default") // 3 tentativas
-    @Retry(name = "foo-bar") // configurado no application.yaml
+    @Retry(name = "foo-bar", fallbackMethod = "fallbackMethod") // configurado no application.yaml
     public String fooBar() {
         logger.info("Request to foo-bar is received!");
         ResponseEntity<String> response = new RestTemplate()
                 .getForEntity("http://localhost:8080/foo-bar", String.class);
         return response.getBody();
+    }
+
+    private String fallbackMethod(Exception ex) {
+        return "fallbackMethod foo-bar!!";
     }
 }
