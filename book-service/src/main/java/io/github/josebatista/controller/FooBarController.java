@@ -1,6 +1,6 @@
 package io.github.josebatista.controller;
 
-import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,8 @@ public class FooBarController {
 
     @GetMapping("/foo-bar")
 //    @Retry(name = "default") // 3 tentativas
-    @Retry(name = "foo-bar", fallbackMethod = "fallbackMethod") // configurado no application.yaml
+//    @Retry(name = "foo-bar", fallbackMethod = "fallbackMethod") // configurado no application.yaml
+    @CircuitBreaker(name = "default", fallbackMethod = "fallbackMethod")
     public String fooBar() {
         logger.info("Request to foo-bar is received!");
         ResponseEntity<String> response = new RestTemplate()
