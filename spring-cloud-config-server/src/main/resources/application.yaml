@@ -3,6 +3,10 @@ server:
 spring:
   application:
     name: spring-cloud-config-server
-  profiles:
-    active:
-      - native
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/josebatista/microservices-erudio-config-server
+          search-paths:
+            - greeting-service # nome do diretorio no repo
