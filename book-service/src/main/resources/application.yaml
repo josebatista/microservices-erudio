@@ -35,6 +35,10 @@ spring:
       hibernate:
     open-in-view: false
     show-sql: false
+  management:
+    tracing:
+      sampling:
+        probability: 1.0 # 100%
 springdoc:
   api-docs:
     path: /book-service/v3/api-docs
