@@ -11,6 +11,10 @@ services:
       - '3306:3306'
     volumes:
       - ms-mysql-volume:/var/lib/mysql
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - '9411:9411'
 volumes:
   ms-mysql-volume:
     driver: local
