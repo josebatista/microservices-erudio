@@ -26,8 +26,24 @@ services:
   naming-server:
     image: pereiraze/naming-server:0.0.1-SNAPSHOT
     restart: always
+    depends_on:
+      - zipkin-server
     ports:
       - '8761:8761'
+    networks:
+      - ms-network
+
+  api-gateway:
+    image: pereiraze/api-gateway:0.0.1-SNAPSHOT
+    restart: always
+    depends_on:
+      - zipkin-server
+      - naming-server
+    environment:
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+    ports:
+      - '8765:8765'
     networks:
       - ms-network
 
