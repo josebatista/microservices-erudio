@@ -1,18 +1,4 @@
 services:
-  #MySQL Server
-  db:
-    image: mysql:8.4.4
-    container_name: my-mysql
-    restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=admin123
-    ports:
-      - '3306:3306'
-    volumes:
-      - ms-mysql-volume:/var/lib/mysql
-    networks:
-      - ms-network
-
   #Zipkin Server
   zipkin-server:
     image: openzipkin/zipkin
@@ -26,24 +12,64 @@ services:
   naming-server:
     image: pereiraze/naming-server:0.0.1-SNAPSHOT
     restart: always
-    depends_on:
-      - zipkin-server
     ports:
       - '8761:8761'
+    depends_on:
+      - zipkin-server
     networks:
       - ms-network
 
+  # API Gateway
   api-gateway:
     image: pereiraze/api-gateway:0.0.1-SNAPSHOT
     restart: always
-    depends_on:
-      - zipkin-server
-      - naming-server
     environment:
+      TZ: America/Sao_Paulo
       SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
     ports:
       - '8765:8765'
+    depends_on:
+      - zipkin-server
+      - naming-server
+    networks:
+      - ms-network
+
+  #MySQL Server - BOOK-Service
+  book-db:
+    image: mysql:8.4.4
+    container_name: book-db
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: admin123
+      MYSQL_DATABASE: book_service
+    ports:
+      - '3310:3306' # 3310 on Host -> 3306 on container
+    networks:
+      - ms-network
+
+  book-service:
+    image: pereiraze/book-service
+    build:
+      context: ./book-service
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:mysql://book-db:3306/book_service?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: docker
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - '8100:8100'
+    depends_on:
+      - zipkin-server
+      - naming-server
+      - book-db
     networks:
       - ms-network
 
