@@ -1,11 +1,10 @@
-version: '3.8'
 services:
   db:
     image: mysql:8.4.4
     container_name: my-mysql
     restart: always
     environment:
-#      - MYSQL_DATABASE=mysqlDB
+      #      - MYSQL_DATABASE=mysqlDB
       - MYSQL_ROOT_PASSWORD=admin123
     ports:
       - '3306:3306'
@@ -15,6 +14,18 @@ services:
     image: openzipkin/zipkin
     ports:
       - '9411:9411'
+
+  # Naming Server (Eureka Registry)
+  naming-server:
+    image: pereiraze/naming-server:0.0.1-SNAPSHOT
+    ports:
+      - '8761:8761'
+    networks:
+      - ms-network
 volumes:
   ms-mysql-volume:
     driver: local
+networks:
+  ms-network:
+    name: ms-network
+    driver: bridge
